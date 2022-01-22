@@ -37,7 +37,7 @@ public:
     }
 };
 
-#define N 20
+#define N 10000
 int main()
 {
     setlocale(LC_ALL, "Rus");
@@ -45,8 +45,12 @@ int main()
     int arr[N]; // Создание и заполнение массива
     for (int i = 0;i < N;i++)
     {
-        arr[i] = rand() % 150;
-        std::cout << arr[i] << " ";
+        arr[i] = rand() % 50;
+        if (N < 2000)
+        {
+            std::cout << arr[i] << " ";
+        }
+        
     }
     // Проверка условия
     int count = 0;
@@ -61,6 +65,7 @@ int main()
         std::cout << std::endl << "Условие выполненно" << std::endl;
         std::cout <<  "Начало сортировки " << std::endl;
         Timer t;
+        
         for (int i = 0; i < N; i++) 
         {
             for (int j = 0; j < N-1; j++) 
@@ -73,8 +78,9 @@ int main()
                 }
             }
         }
-        std::cout << "Конец сортировки " << std::endl;
+        
         std::cout << "Затраченное время: " << t.elapsed() << std::endl;
+        std::cout << "Конец сортировки " << std::endl;
     }
     else
     {
@@ -82,8 +88,11 @@ int main()
     }
     for (int i = 0;i < N;i++)
     {
-        std::cout << arr[i] << " ";
+        if(N < 2000)
+        {
+            std::cout << arr[i] << " ";
+        }
     }
 }
 // O = N^2 Так как использовалась пузырьковая сортировка
-// Ожидаемое время работы сортировки 0.0001*N
+// Ожидаемое время работы сортировки при N = 20
