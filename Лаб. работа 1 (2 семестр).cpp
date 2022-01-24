@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <vector>
 class Timer
 {
 private:
@@ -37,48 +38,39 @@ public:
     }
 };
 
-#define N 10000
-int main()
+#define N 5000
+/* Лучшее время работы О = n
+*  Худшее время работы O = n^2
+*/
+void BubbleSort(std::vector<int>& values)
 {
-    setlocale(LC_ALL, "Rus");
-    srand(time(0));
-    int arr[N]; // Создание и заполнение массива
-    for (int i = 0;i < N;i++)
-    {
-        arr[i] = rand() % 50;
-        if (N < 2000)
-        {
-            std::cout << arr[i] << " ";
-        }
-        
-    }
     // Проверка условия
     int count = 0;
     for (int i = 0;i < N;i++)
     {
-        count += arr[i];
+        count += values[i];
     }
     if (count > 1000)
     {
         int op, zm;
 
         std::cout << std::endl << "Условие выполненно" << std::endl;
-        std::cout <<  "Начало сортировки " << std::endl;
+        std::cout << "Начало пузырьковой сортировки " << std::endl;
         Timer t;
-        
-        for (int i = 0; i < N; i++) 
+
+        for (int i = 0; i < N; i++)
         {
-            for (int j = 0; j < N-1; j++) 
+            for (int j = 0; j < N - 1; j++)
             {
-                if (arr[j] > arr[j + 1]) 
+                if (values[j] > values[j + 1])
                 {
-                    int b = arr[j];
-                    arr[j] = arr[j + 1]; 
-                    arr[j + 1] = b; 
+                    int b = values[j];
+                    values[j] = values[j + 1];
+                    values[j + 1] = b;
                 }
             }
         }
-        
+
         std::cout << "Затраченное время: " << t.elapsed() << std::endl;
         std::cout << "Конец сортировки " << std::endl;
     }
@@ -86,13 +78,86 @@ int main()
     {
         std::cout << std::endl << "Условие не выполненно" << std::endl;
     }
-    for (int i = 0;i < N;i++)
+}
+void Shaker(std::vector<int>& values)
+{
+    int L = values.size();
+    for (int i = 0;i < L;i++)
     {
-        if(N < 2000)
+        values[i] = rand() % 50;
+    }
+}
+void Printer(std::vector<int>& values)
+{
+    int L = values.size();
+    if (L <= 2000)
+    {
+        for (int i = 0;i < L;i++)
         {
-            std::cout << arr[i] << " ";
+            std::cout << values[i] << " ";
+        }
+    }
+    
+}
+void MergeSortImpl(std::vector<int>& values, std::vector<int>& buffer, int l, int r) {
+    if (l < r) {
+        int m = (l + r) / 2;
+        MergeSortImpl(values, buffer, l, m);
+        MergeSortImpl(values, buffer, m + 1, r);
+
+        int k = l;
+        for (int i = l, j = m + 1; i <= m || j <= r; ) {
+            if (j > r || (i <= m && values[i] < values[j])) {
+                buffer[k] = values[i];
+                ++i;
+            }
+            else {
+                buffer[k] = values[j];
+                ++j;
+            }
+            ++k;
+        }
+        for (int i = l; i <= r; ++i) {
+            values[i] = buffer[i];
         }
     }
 }
-// O = N^2 Так как использовалась пузырьковая сортировка
-// Ожидаемое время работы сортировки при N = 20
+/* Лучшее время работы О = n*log(n)
+*  Худшее время работы O = n*log(n)
+*/
+void MergeSort(std::vector<int>& values) {
+    if (!values.empty()) {
+        std::vector<int> buffer(values.size());
+        MergeSortImpl(values, buffer, 0, values.size() - 1);
+    }
+}
+
+
+int main()
+{
+    setlocale(LC_ALL, "Rus");
+    srand(time(0));
+    std::vector<int> arr; 
+    int count = 0;
+    for (int i = 0;i < N;i++)
+    {
+        arr.push_back(rand() % 50);
+        count += arr[i];
+    }
+    if (count >= 1000)
+    {
+        Printer(arr);
+        BubbleSort(arr);
+        Printer(arr);
+        Shaker(arr);
+        Printer(arr);
+        std::cout << "Начало сортировки слиянием " << std::endl;
+        Timer t1;
+        MergeSort(arr);
+        std::cout << "Затраченное время: " << t1.elapsed() << std::endl;
+        std::cout << "Конец сортировки " << std::endl;
+        Printer(arr);
+    }
+    
+}
+
