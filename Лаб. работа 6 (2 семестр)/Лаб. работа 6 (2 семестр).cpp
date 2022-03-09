@@ -48,8 +48,8 @@ public:
     }
 };
 using namespace std;
-#define N 100000 // Количество элементов
-#define K 20000 // Количество поисковых запросов
+
+
 struct Elem
 {
     int data;
@@ -233,61 +233,84 @@ void MSort(std::vector<int>& values)
         MSort_B(values, buffer, 0, values.size() - 1);
     }
 }
-
+#define N 200000 // Количество элементов
 int main()
 {
     srand(time(0));
     setlocale(LC_ALL, "Rus");
-    // Файл выхода с общими данными
-    ofstream out("results.txt");
-    out << "Количество элементов: " << N << endl;
-    out << "Количество посковых запросов: " << K << endl;
-    ifstream in("input.txt");
-    int arr[N]; // Тестовый массив
-    vector<int> victor; // Тестовый вектор
-    Elem* root = nullptr; // Тестовое дерево
+    int K = 5000;
 
-    int itr;
-    // Заполнение вектора
-    for (int i = 0;i < N;i++) 
-    {
-        in >> itr;
-        victor.push_back(i);
+        // Файл выхода с общими данными
+        ofstream out("output.txt");
+        ofstream res("results.txt", ios_base::app);
+
+        
+        ifstream in("input.txt");
+        int arr[N]; // Тестовый массив
+        vector<int> victor; // Тестовый вектор
+        Elem* root = nullptr; // Тестовое дерево
+
+        int base[N]; // Банк элементов
+        int itr;
+        // Заполнение вектора и базы
+        for (int i = 0;i < N;i++)
+        {
+            in >> itr;
+            victor.push_back(i);
+            base[i] = itr;
+        }
+        // Заполнение дерева
+        for (int i = 0;i < N;i++)
+        {
+            ADD(victor[i], root);
+        }
+        // Сортировка вектора и заполнение массива
+    for (int u = 0;u < 11;u++)
+        {
+            out << "Количество элементов: " << N << endl;
+            res << "\n" << N << "\t";
+            out << "Количество посковых запросов: " << K << endl;
+            res << K << "\t\t";
+        Timer t1;
+        float t2;
+        MSort(victor);
+        t2 = t1.elapsed();
+        out << t2 << " Затраченное на сортировку время" << std::endl;
+        res << t2 << "\t";
+
+        for (int i = 0;i < N;i++)
+        {
+            arr[i] = victor[i];
+        }
+        // Проверка массива
+        t1.reset();
+        for (int j = 0;j < K;j++)
+        {
+            Search_Array(arr, base[rand() % N], N);
+        }
+        t2 = t1.elapsed();
+        out << t2 << " Затраченное время сортированным массивом " << std::endl;
+        res << t2 << "\t";
+        // Проверка вектора
+        t1.reset();
+        for (int j = 0;j < K;j++)
+        {
+            Search_Vector(victor, base[rand() % N]);
+        }
+        t2 = t1.elapsed();
+        out << t2 << " Затраченное время сортированным вектором " << std::endl;
+        res << t2 << "\t";
+        // Проверка дерева
+        t1.reset();
+        for (int j = 0;j < K;j++)
+        {
+            SEARCH(base[rand() % N], root);
+        }
+        t2 = t1.elapsed();
+        out << t2 << " Затраченное время деревом " << std::endl;
+        res << t2 << "\t";
+        K = K * 2;
     }
-    // Заполнение дерева
-    for (int i = 0;i < N;i++) 
-    {
-        ADD(victor[i], root);
-    }
-    // Сортировка вектора и заполнение массива
-    Timer t1;
-    MSort(victor);
-    out << t1.elapsed() << " Затраченное на сортировку время" << std::endl;
-    for (int i = 0;i < N;i++)
-    {
-        arr[i]=victor[i];
-    }
-    // Проверка массива
-    t1.reset();
-    for (int j = 0;j < K;j++)
-    {
-        Search_Array(arr, rand() % N , N);
-    }
-    out << t1.elapsed() << " Затраченное время сортированным массивом "  << std::endl;
-    // Проверка вектора
-    t1.reset();
-    for (int j = 0;j < K;j++)
-    {
-        Search_Vector(victor, rand() % N );
-    }
-    out << t1.elapsed() << " Затраченное время сортированным вектором " << std::endl;
-    // Проверка дерева
-    t1.reset();
-    for (int j = 0;j < K;j++)
-    {
-        SEARCH(rand() % (N/10), root);
-    }
-    out << t1.elapsed() << " Затраченное время деревом " << std::endl;
     /*
     Blender(victor);
     for (int i = 0;i < N;i++)
