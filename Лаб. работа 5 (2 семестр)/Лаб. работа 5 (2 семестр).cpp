@@ -27,8 +27,6 @@ struct Elem
     Elem* right;
     Elem* parent;
 };
-
-
 Elem* MAKE(int data, Elem* p)
 {
     Elem* q = new Elem;         
@@ -38,8 +36,6 @@ Elem* MAKE(int data, Elem* p)
     q->parent = p;
     return q;
 }
-
-
 void ADD(int data, Elem*& root)
 {
     if (root == nullptr) {
@@ -60,7 +56,6 @@ void ADD(int data, Elem*& root)
     else
         v->right = u;
 }
- 
 void PASS(Elem* v)
 {
     if (v == nullptr)
@@ -69,7 +64,6 @@ void PASS(Elem* v)
     std::cout << v->data << std::endl;
     PASS(v->right);
 }
-
 Elem* SEARCH(int data, Elem* v)    
 {
     if (v == nullptr)
@@ -81,25 +75,34 @@ Elem* SEARCH(int data, Elem* v)
     else
         return SEARCH(data, v->right);
 }
-
-
 void DELETE(int data, Elem*& root)
 {
     //   .  
     Elem* u = SEARCH(data, root);
     if (u == nullptr)
         return;
-    if (u->parent == nullptr)
-    {
-        std::cout << " Удаление корня ";
-        root == nullptr;
-        return;
-    }
-    //   ( )
     if (u->left == nullptr && u->right == nullptr && u == root)
     {
+        delete root;
         root = nullptr;
         return;
+    }  
+    if (u->left == nullptr && u->right != nullptr && u == root) 
+    {
+        Elem* t = u->right;
+        while (t->left != nullptr)
+            t = t->left;
+        u->data = t->data;
+        u = t;
+    }
+ 
+    if (u->left != nullptr && u->right == nullptr && u == root) 
+    {
+        Elem* t = u->left;
+        while (t->right != nullptr)
+            t = t->right;
+        u->data = t->data;
+        u = t;
     }
 
     //    
@@ -122,7 +125,24 @@ void DELETE(int data, Elem*& root)
         u->parent->right = t;
     if (t != nullptr)
         t->parent = u->parent;
+    delete u;
 }
+void CLEAR(Elem*& v)
+{
+    if (v == nullptr)
+        return;
+    // 
+
+    CLEAR(v->left);
+    // 
+
+    CLEAR(v->right);
+
+    // 
+    delete v;
+    v = nullptr;
+}
+
 
 int main()
 {
@@ -168,7 +188,7 @@ int main()
             DELETE(p, root);
         }
     }
-    
+    CLEAR(root);
 
 
     return 0;
