@@ -11,9 +11,7 @@
 
 class Matrix
 {
-	// Абстракция
-	// Инкапсуляция
-	// Использование вне класса
+
 public:
 	// Конструктор
 	Matrix(int n, int m)
@@ -28,8 +26,6 @@ public:
 	// Конструктор копирования
 	Matrix(const Matrix& mat)
 	{
-		//std::cout << "Copy constructor" << std::endl;
-
 		m_n = mat.m_n;
 		m_m = mat.m_m;
 
@@ -44,8 +40,6 @@ public:
 	// Присваивание
 	Matrix& operator=(const Matrix& mat)
 	{
-		//std::cout << "Operator =" << std::endl;
-
 		m_n = mat.m_n;
 		m_m = mat.m_m;
 
@@ -57,8 +51,7 @@ public:
 	}
 	// Оператор сложения
 	Matrix operator+(const Matrix& mat) {
-		std::cout << "operator+" << std::endl;
-		int t = 1, r=1;
+		int t = 1, r = 1;
 		if (mat.m_m == m_m && mat.m_n == m_n)
 		{
 			t = mat.m_m;
@@ -78,7 +71,6 @@ public:
 	}
 	// Оператор сложения  C += A <=> C = C + A
 	Matrix operator+=(const Matrix& mat) {
-		std::cout << "operator+=" << std::endl;
 		int t = 1, r = 1;
 		if (mat.m_m == m_m && mat.m_n == m_n)
 		{
@@ -99,7 +91,6 @@ public:
 	}
 	// Оператор вычитания
 	Matrix operator-(const Matrix& mat) {
-		std::cout << "operator-" << std::endl;
 		int t = 1, r = 1;
 		if (mat.m_m == m_m && mat.m_n == m_n)
 		{
@@ -166,7 +157,7 @@ public:
 				}
 			}
 		}
-			
+
 		return tmp;
 	}
 	// Определитель 2х2 и 3х3
@@ -210,7 +201,6 @@ public:
 		}
 		return tmp;
 	}
-
 	// Деструктор
 	~Matrix()
 	{
@@ -219,7 +209,6 @@ public:
 			delete[] m_mat[i];
 		delete m_mat;
 	}
-
 	// friend - позволяет функции иметь доступ к private полям/методам класса
 	friend std::istream& operator>>(std::istream& os, Matrix& mat);
 	friend std::ostream& operator<<(std::ostream& os, const Matrix& mat);
@@ -238,7 +227,7 @@ public:
 		double temp;
 
 		Matrix E(m_n, m_m);
-		
+
 		for (int i = 0; i < N; i++)
 			for (int j = 0; j < N; j++)
 			{
@@ -288,9 +277,10 @@ public:
 			for (int j = 0; j < N; j++)
 				m_mat[i][j] = E.m_mat[i][j];
 
-		
+
 	}
-	Matrix Minor( int a1, int a2)
+	// Нахождение минора
+	Matrix Minor(int a1, int a2)
 	{
 		Matrix E(m_n - 1, m_m - 1);
 		if (m_m != m_n)
@@ -320,9 +310,9 @@ public:
 									i1 = m_m - 2;
 								}
 							}
-							
+
 						}
-						
+
 					}
 				}
 			}
@@ -335,8 +325,8 @@ public:
 		Matrix R(m_n, m_m);
 		if (m_m != m_n)
 		{
-				std::cout << "«Операция не поддерживается»" << std::endl;
-				return R;
+			std::cout << "«Операция не поддерживается»" << std::endl;
+			return R;
 		}
 		else if (m_m > 3)
 		{
@@ -354,7 +344,6 @@ public:
 			}
 		}
 		float d = C.Det();
-		R = R.Tmatrix();
 		std::cout << d << std::endl;
 		int cof = 1;
 		if (d != 0)
@@ -363,17 +352,15 @@ public:
 			{
 				for (int j = 0;j < m_m;j++)
 				{
-					if (i + j % 2 != 0)
+					if ((i + j) % 2 != 0)
 					{
 						cof = (-1);
 					}
-					R.m_mat[i][j] = C.Minor(i, j).Det()*cof;
-					//cof = cof * (-1);
+					R.m_mat[j][i] = C.Minor(i, j).Det() * cof;
+
 					cof = 1;
 				}
 			}
-			
-			std::cout << R;
 			for (int i = 0;i < m_n;i++)
 			{
 				for (int j = 0;j < m_m;j++)
@@ -382,7 +369,17 @@ public:
 				}
 			}
 		}
-		R = R.Tmatrix();
+		else
+		{
+			std::cout << "Нет обратной матрицы\n";
+			for (int i = 0;i < m_n;i++)
+			{
+				for (int j = 0;j < m_m;j++)
+				{
+					R.m_mat[i][j] = m_mat[i][j];
+				}
+			}
+		}
 		return R;
 	}
 	// Использование внутри класса
@@ -416,27 +413,23 @@ std::ostream& operator<<(std::ostream& out, const Matrix& mat)
 
 int main()
 {
-	Matrix A(2, 2);
+	setlocale(LC_ALL, "Rus");
+	Matrix A(3, 3);
 
 	std::cin >> A;
-	//std::cout << A.Det() << std::endl; 
-	//std::cout << A.Tmatrix() << std::endl;
-	//std::cout << A.Minor(1, 2);
-	//std::cout << A.Minor(1, 2).Det();
-	std::cout << A.RMatrix();
-	//A.inversion();
-	//std::cout << A  << std::endl;
-	//Matrix B(3, 3);
-	//std::cin >> B;
-	//std::cout << B << std::endl;
+	std::cout << "Определитель: \n" << A.Det() << std::endl;
+	std::cout << "Транспонированная матрица: \n" << A.Tmatrix() << std::endl;
+	std::cout << "Обратная матрица: \n" << A.RMatrix();
 
-	//Matrix C(2, 4);
-	//C = A + B;
+	Matrix B(3, 3);
+	std::cin >> B;
+	std::cout << B << std::endl;
 
-	//std::cout << C << std::endl;
-
-	//C = A * B;
-	//std::cout << A * B << std::endl;
+	Matrix C(2, 4);
+	C = A + B;
+	std::cout << "Сумма матриц: \n" << C << std::endl;
+	C = A * B;
+	std::cout << "Произведение матриц: \n" << A * B << std::endl;
 
 	return 0;
 }
