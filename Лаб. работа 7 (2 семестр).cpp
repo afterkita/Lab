@@ -425,7 +425,7 @@ int main()
 	std::cin >> B;
 	std::cout << B << std::endl;
 
-	Matrix C(2, 4);
+	Matrix C(3, 3);
 	C = A + B;
 	std::cout << "Сумма матриц: \n" << C << std::endl;
 	C = A * B;
