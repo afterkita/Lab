@@ -1,4 +1,8 @@
-#include "BMP.hpp"
+
+#include <cmath>
+#include <BMP.hpp>
+#include <exception>
+
 
 namespace mt::images
 {
@@ -72,6 +76,8 @@ namespace mt::images
         for (int i = 0; i < m_height; i++)
             m_pixels[i] = new Pixel[m_width];
 
+
+
         for (int i = 0; i < m_height; i++)
             for (int j = 0; j < m_width; j++)
                 m_pixels[i][j] = bmp.m_pixels[i][j];
@@ -138,6 +144,20 @@ namespace mt::images
         for (int i = 0; i < m_height; i++)
             m_pixels[i] = new Pixel[m_width];
 
+        m_coordinates = new Vec2d * [m_height];
+        for (int i = 0; i < m_height; i++)
+            m_coordinates[i] = new Vec2d[m_width];
+
+        for (int i = 0; i < m_height; i++)
+            for (int j = 0; j < m_width; j++)
+                m_pixels[i][j] = { 0,0,0 };
+
+        for (int i = 0; i < m_height; i++)
+            for (int j = 0; j < m_width; j++)
+            {
+                m_coordinates[i][j].set(0, 0, j);
+                m_coordinates[i][j].set(1, 0, i);
+            }
         for (int i = 0; i < bmpInfo.Height; i++)
         {
             for (int j = 0; j < bmpInfo.Width; j++)
@@ -151,11 +171,75 @@ namespace mt::images
                 }
         }
     }
+    void BMP::My_Open(const std::string& filename)
+    {
+        // Чтение файла
+        std::ifstream in(filename, std::ios::binary); // открыть файл для бинарного чтения
+
+        BMPHEADER bmpHeader;
+        // Считать 14 байтов побайтово и заполнить структуру BMPHEADER
+        in.read(reinterpret_cast<char*>(&bmpHeader), sizeof(BMPHEADER));
+
+        BMPINFO bmpInfo;
+        in.read(reinterpret_cast<char*>(&bmpInfo), sizeof(BMPINFO));
+
+        if (m_pixels != nullptr)
+        {
+            for (int i = 0; i < m_height; i++)
+                delete[] m_pixels[i];
+            delete[] m_pixels;
+        }
+
+        m_width = bmpInfo.Width;
+        m_height = bmpInfo.Height;
+
+        m_pixels = new Pixel * [m_height];
+        for (int i = 0; i < m_height; i++)
+            m_pixels[i] = new Pixel[m_width];
+
+        for (int i = 0; i < bmpInfo.Height; i++)
+        {
+            for (int j = 0; j < bmpInfo.Width; j++)
+                in.read(reinterpret_cast<char*>(&m_pixels[i][j]), sizeof(Pixel));
+
+            if ((3 * bmpInfo.Width) % 4 != 0)
+                for (int j = 0; j < 4 - (3 * bmpInfo.Width) % 4; j++)
+                {
+                    char c;
+                    in.read(&c, 1);
+                }
+        }
+    }
+    void BMP::Refactor() {
+        int count;
+        for (int i = 1; i < m_height-1; i++)
+            for (int j = 1; j < m_width-1; j++){
+                if (m_pixels[i][j].r == 0 && m_pixels[i][j].g == 0 && m_pixels[i][j].b == 0){
+                    count = 8;
+                    if (m_pixels[i + 1][j].r == 0 && m_pixels[i + 1][j].b == 0 && m_pixels[i + 1][j].g == 0) count--;
+                    if (m_pixels[i + 1][j+1].r == 0 && m_pixels[i + 1][j+1].b == 0 && m_pixels[i + 1][j+1].g == 0) count--;
+                    if (m_pixels[i][j+1].r == 0 && m_pixels[i][j+1].b == 0 && m_pixels[i][j+1].g == 0) count--;
+                    if (m_pixels[i - 1][j].r == 0 && m_pixels[i - 1][j].b==0 && m_pixels[i - 1][j].g == 0) count--;
+                    if (m_pixels[i - 1][j-1].r == 0 && m_pixels[i - 1][j-1].b==0 && m_pixels[i - 1][j-1].g == 0) count--;
+                    if (m_pixels[i][j-1].r == 0 && m_pixels[i][j-1].b == 0 && m_pixels[i][j-1].g == 0) count--;
+                    if (m_pixels[i + 1][j-1].r ==0 && m_pixels[i + 1][j-1].b == 0 && m_pixels[i + 1][j-1].g == 0) count--;
+                    if (m_pixels[i - 1][j+1].r == 0 && m_pixels[i - 1][j+1].b == 0 && m_pixels[i - 1][j+1].g == 0) count--;
+
+                    if (count >= 5)
+                    {
+                        m_pixels[i][j].r = (m_pixels[i + 1][j].r + m_pixels[i][j + 1].r + m_pixels[i - 1][j].r + m_pixels[i][j - 1].r + m_pixels[i + 1][j + 1].r + m_pixels[i - 1][j - 1].r + m_pixels[i + 1][j - 1].r + m_pixels[i - 1][j + 1].r) / count;
+                        m_pixels[i][j].b = (m_pixels[i + 1][j].b + m_pixels[i][j + 1].b + m_pixels[i - 1][j].b + m_pixels[i][j - 1].b + m_pixels[i + 1][j + 1].b + m_pixels[i - 1][j - 1].b + m_pixels[i + 1][j - 1].b + m_pixels[i - 1][j + 1].b) / count;
+                        m_pixels[i][j].g = (m_pixels[i + 1][j].g + m_pixels[i][j + 1].g + m_pixels[i - 1][j].g + m_pixels[i][j - 1].g + m_pixels[i + 1][j + 1].g + m_pixels[i - 1][j - 1].g + m_pixels[i + 1][j - 1].g + m_pixels[i - 1][j + 1].g) / count;
+
+                    }
+                }
+            }
+    }
 
     void BMP::Save(const std::string& filename)
     {
         if (m_width == 0 || m_height == 0)
-            throw std::exception("Zero height or width");
+            throw std::exception();
 
         // Записать файл
         std::ofstream out(filename, std::ios::binary);
@@ -213,7 +297,11 @@ namespace mt::images
        
         for(int i=0;i<m_height;i++)
             for (int j = 0; j < m_width; j++)
+            {
+
                 m_coordinates[i][j] = m_coordinates[i][j] - T;
+            }
+
 
         // 2. Поворот
         Mat22d R({ {

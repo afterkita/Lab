@@ -76,8 +76,8 @@ namespace mt::math
 			void set(int i, int j, T data) { m_mat[i][j] = data; }
 
 			// Присваивание
-			template<typename T, int N, int M>
-			Matrix<T, N, M>& operator=(const Matrix<T, N, M>& mat)
+			template<typename T_, int N_, int M_>
+			Matrix<T_, N_, M_>& operator=(const Matrix<T_, N_, M_>& mat)
 			{
 	#ifdef MY_DEBUG
 				std::cout << "Operator =" << std::endl;
@@ -94,13 +94,13 @@ namespace mt::math
 			}
 
 			// Оператор сложения
-			template<typename T, int N, int M>
-			Matrix<T, N, M> operator+(const Matrix<T, N, M>& mat)
+            template<typename T_, int N_, int M_>
+			Matrix<T_, N_, M_> operator+(const Matrix<T_, N_, M_>& mat)
 			{
 	#ifdef MY_DEBUG
 				std::cout << "operator+" << std::endl;
 	#endif
-				Matrix<T, N, M> tmp;
+				Matrix<T_, N_, M_> tmp;
 				for (int i = 0; i < m_n; i++)
 					for (int j = 0; j < m_m; j++)
 						tmp.m_mat[i][j] = m_mat[i][j] + mat.m_mat[i][j];
@@ -108,13 +108,13 @@ namespace mt::math
 			}
 
 			// Оператор вычитания
-			template<typename T, int N, int M>
-			Matrix<T, N, M> operator-(const Matrix<T, N, M>& mat)
+			template<typename T_, int N_, int M_>
+			Matrix<T_, N_, M_> operator-(const Matrix<T_, N_, M_>& mat)
 			{
 #ifdef MY_DEBUG
 				std::cout << "operator-" << std::endl;
 #endif
-				Matrix<T, N, M> tmp;
+				Matrix<T_, N_, M_> tmp;
 				for (int i = 0; i < m_n; i++)
 					for (int j = 0; j < m_m; j++)
 						tmp.m_mat[i][j] = m_mat[i][j] - mat.m_mat[i][j];
@@ -122,13 +122,13 @@ namespace mt::math
 			}
 
 			// Оператор умножения
-			template<typename T, int N, int M>
-			Matrix<T, N, M> operator*(const Matrix<T, N, M>& mat)
+			template<typename T_, int N_, int M_>
+			Matrix<T_, N_, M_> operator*(const Matrix<T_, N_, M_>& mat)
 			{
 	#ifdef MY_DEBUG
 				std::cout << "operator*" << std::endl;
 	#endif
-				Matrix<T, N, M> tmp;
+				Matrix<T_, N_, M_> tmp;
 
 				for (int i = 0; i < m_n; i++)
 					for (int j = 0; j < mat.getM(); j++)
@@ -158,7 +158,7 @@ namespace mt::math
 				// Расчет
 				int d = det();
 				if (d == 0)
-					throw std::exception("Zero determinant!");
+					throw std::exception();
 
 				std::cout << "After throw exception in inv function!" << std::endl;
 
@@ -177,10 +177,10 @@ namespace mt::math
 			}
 
 			// friend - позволяет функции иметь доступ к private полям/методам класса
-			template<typename T, int N, int M>
+			template<typename T_, int N_, int M_>
 			friend std::istream& operator>>(std::istream& os, Matrix<T, N, M>& mat);
 
-			template<typename T, int N, int M>
+			template<typename T_, int N_, int M_>
 			friend std::ostream& operator<<(std::ostream& os, const Matrix<T, N, M>& mat);
 
 		private:

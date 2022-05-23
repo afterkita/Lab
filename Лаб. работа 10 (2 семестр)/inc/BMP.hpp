@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <fstream>
-#include "matrix.hpp"
+#include <mathutils/matrix.hpp>
 
 using mt::math::Vec2d;
 using mt::math::Mat22d;
@@ -29,6 +29,9 @@ namespace mt::images
         void Fill(Pixel pixel);
         void Brightness();
         void Open(const std::string& filename);
+        void My_Open(const std::string& filename);
+        void Refactor();
+
         void Save(const std::string& filename);
         void Rotate(double angle);
 
